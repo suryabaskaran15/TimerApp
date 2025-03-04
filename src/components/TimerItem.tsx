@@ -15,16 +15,20 @@ const TimerItem: React.FC<{ timer: Timer }> = ({ timer }) => {
                     if (prev > 1) {
                         return prev - 1;
                     }
-                    dispatch({ type: 'RESET_TIMER', id: timer.id }); // Auto-reset when timer hits 0
+                    if (prev === 1) {
+                        // ✅ Ensure dispatch happens outside of `setState`
+                        setTimeout(() => dispatch({ type: "MARK_COMPLETED", id: timer.id }), 0);
+                    }
                     return 0;
                 });
             }, 1000);
-        } else {
-            clearInterval(interval as unknown as NodeJS.Timeout);
+        } else if (interval) {
+            clearInterval(interval);
         }
-
         return () => interval && clearInterval(interval);
     }, [timer.running]);
+
+
 
     useEffect(() => {
         setTimeLeft(timer.remaining); // Update timeLeft when timer is reset

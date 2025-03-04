@@ -19,6 +19,7 @@ type Action =
   | { type: 'TOGGLE_TIMER'; id: string }
   | { type: 'RESET_TIMER'; id: string }
   | { type: 'DELETE_TIMER'; id: string }
+  | { type: 'MARK_COMPLETED'; id: string }
   | { type: 'LOAD_TIMERS'; payload: Timer[] };
 
 const TimerContext = createContext<{
@@ -52,6 +53,13 @@ const timerReducer = (state: State, action: Action): State => {
 
     case 'LOAD_TIMERS':
       return { timers: action.payload };
+
+    case "MARK_COMPLETED":
+      return {
+        timers: state.timers.map(timer =>
+          timer.id === action.id ? { ...timer, completed: true, running: false } : timer
+        ),
+      };
 
     default:
       return state;
